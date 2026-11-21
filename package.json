@@ -10,6 +10,8 @@
     "sync:report": "node src/gen-css.ts --into ../agent-setup/templates/report-theme.css",
     "switch": "node src/switch-day.ts",
     "preview": "node src/gen-preview.ts --open",
-    "audit": "node src/audit.ts"
+    "audit": "node src/audit.ts",
+    "demo": "node src/gen-demo.ts --open",
+    "build:pages": "node src/gen-demo.ts --pages && node src/gen-preview.ts --pages"
   }
 }
