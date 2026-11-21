@@ -35,12 +35,6 @@ export type Palette = {
   colors: Record<Appearance, BaseColors>
 }
 
-export const FONTS = {
-  jp: "'Zen Kaku Gothic New', 'Hiragino Sans', 'Yu Gothic', sans-serif",
-  tech: "'Inter', 'Zen Kaku Gothic New', sans-serif",
-  mono: "'JetBrains Mono', 'SF Mono', Consolas, monospace",
-}
-
 const blueprint: Palette = {
   id: 'blueprint',
   label: 'Blueprint',

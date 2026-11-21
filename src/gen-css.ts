@@ -1,17 +1,22 @@
-// tokens.ts → CSS 変数ブロック。
+// 辞書 → report-doc の変換表 → CSS 変数ブロック。色だけを出す (フォント・レイアウトは report-theme.css 側の持ち物)
 //   node src/gen-css.ts                 → dist/tokens.css
 //   node src/gen-css.ts --into <file>   → <file> の BEGIN/END マーカー間を置き換える (report-theme.css 用)
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { parseArgs } from 'node:util'
-import { type Appearance, type BaseColors, DAYS, DAY_MIX, FONTS, PALETTES } from './tokens.ts'
+import { type Appearance, DAYS, DAY_MIX, PALETTES } from './tokens.ts'
+import { THEMES, resolveTheme } from './dictionary.ts'
+import { TARGETS, applyTarget } from './targets.ts'
 
 export const BEGIN = '/* @@BLUEPRINT-TOKENS:BEGIN — 生成物。編集は elzup/blueprint-theme の src/tokens.ts で行い gen-css で再生成 */'
 export const END = '/* @@BLUEPRINT-TOKENS:END */'
 
-const kebab = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
+const REPORT = TARGETS.find((t) => t.id === 'report')
 
-const varLines = (colors: BaseColors, indent: string) =>
-  Object.entries(colors).map(([k, v]) => `${indent}--${kebab(k)}: ${v};`)
+const varLines = (family: string, appearance: Appearance, indent: string) => {
+  const theme = THEMES.find((t) => t.family === family && t.appearance === appearance)
+  if (theme === undefined || REPORT === undefined) throw new Error(`${family} ${appearance} のテーマか report の変換表がありません`)
+  return Object.entries(applyTarget(REPORT, resolveTheme(theme, null))).map(([k, v]) => `${indent}--${k}: ${v};`)
+}
 
 const dayLines = (appearance: Appearance, indent: string) =>
   DAYS.map((d) => `${indent}--day-${d.key}: ${d.color[appearance]};`)
@@ -20,8 +25,6 @@ const block = (selector: string, lines: string[], indent: string) =>
   [`${indent}${selector} {`, ...lines, `${indent}}`].join('\n')
 
 const comment = (text: string, indent: string) => `${indent}/* ${text} */`
-
-const fontLines = (indent: string) => Object.entries(FONTS).map(([k, v]) => `${indent}--font-${k}: ${v};`)
 
 // guard: 閲覧側が <html data-theme="dark|light"> で明暗を強制できる形にする (Artifact 公開用)。
 // 既定の report-theme.css は OS 設定だけで切り替える
@@ -38,14 +41,13 @@ const paletteCss = (guard: boolean) =>
   PALETTES.flatMap((p) => {
     const isRoot = p.selector === ':root'
     const darkLines = [
-      ...(isRoot ? [...fontLines('  '), ''] : []),
       comment(p.comment.dark, '  '),
-      ...varLines(p.colors.dark, '  '),
+      ...varLines(p.id, 'dark', '  '),
       ...(isRoot ? ['', comment('曜日 accent の色見本 (data-day で accent に流す)', '  '), ...dayLines('dark', '  ')] : []),
     ]
     const lightLines = [
       comment(p.comment.light, '    '),
-      ...varLines(p.colors.light, '    '),
+      ...varLines(p.id, 'light', '    '),
       ...(isRoot ? ['', ...dayLines('light', '    ')] : []),
     ]
     return [

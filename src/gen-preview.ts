@@ -1,11 +1,9 @@
 // 配色レビュー用のプレビュー (dist/preview.html)。方式 (current / a) × パレット × 明暗 × 曜日 を切り替えて見る。
 //   node src/gen-preview.ts [--open]
-// ページ自体の見た目は agent-setup の report-theme.css を展開して使う (レポートと同じ design system)
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { writeFileSync, mkdirSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
-import { homedir } from 'node:os'
 import { dirname } from 'node:path'
-import { END, renderCss } from './gen-css.ts'
+import { type Mode, embedJson, pageDocument, read } from './page-shell.ts'
 import { parseArgs } from 'node:util'
 import { APPEARANCES, DAYS, PALETTES } from './tokens.ts'
 import { type Scheme, type Variant, SCHEMES, buildVariant } from './variants.ts'
@@ -14,7 +12,6 @@ import { auditVariant, hoverOf, selectionOf } from './audit.ts'
 import { terminalColors } from './gen-vscode.ts'
 
 const OUT = 'dist/preview.html'
-const REPORT_THEME = `${homedir()}/.ghq/github.com/elzup/agent-setup/templates/report-theme.css`
 const SCHEME_LABEL: Record<Scheme, string> = { current: '今の方式 (keyword = 曜日色)', a: '案 a (曜日は縁取りだけ)' }
 
 const ANSI_KEYS = ['Black', 'Red', 'Green', 'Yellow', 'Blue', 'Magenta', 'Cyan', 'White']
@@ -101,37 +98,10 @@ const buildData = () => {
   }
 }
 
-// </script> を含む文字列で埋め込みが途切れないよう < をエスケープ
-const embedJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c')
+const wrapDocument = (mode: Mode, body: string) =>
+  pageDocument({ title: 'Week Theme Preview', mode, css: [read('./preview/preview.css')], body })
 
-const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8')
-
-// Artifact 公開時は閲覧側の明暗切り替え (data-theme) に従わせるため、トークン部分を guard 付きで差し替える
-const themeCss = (isArtifact: boolean) => {
-  const src = readFileSync(REPORT_THEME, 'utf8')
-  if (!isArtifact) return src
-  const start = src.indexOf('/* @@BLUEPRINT-TOKENS:BEGIN')
-  const end = src.indexOf(END) + END.length
-  return src.slice(0, start) + renderCss(true).trimEnd() + src.slice(end)
-}
-
-const head = (isArtifact: boolean) => `<title>Week Theme Preview</title>
-${isArtifact ? '<meta name="claude:viewport-fit-sides" content="cover">' : '<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">'}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-${themeCss(isArtifact)}
-${read('./preview/preview.css')}
-${isArtifact ? read('./preview/artifact.css') : ''}
-</style>`
-
-const wrapDocument = (isArtifact: boolean, body: string) =>
-  isArtifact
-    ? `${head(true)}\n${body}`
-    : `<!DOCTYPE html>\n<html lang="ja">\n<head>\n${head(false)}\n</head>\n<body>\n${body}\n</body>\n</html>\n`
-
-const html = (generatedAt: string, isArtifact: boolean) => wrapDocument(isArtifact, `<div class="wrap">
+const html = (generatedAt: string, mode: Mode) => wrapDocument(mode, `<div class="wrap">
   <nav class="toc" id="toc">
     <div class="toc-title">Contents</div>
     <a href="#s1">1. 色見本</a>
@@ -194,16 +164,25 @@ const html = (generatedAt: string, isArtifact: boolean) => wrapDocument(isArtifa
 ${read('./preview/preview-client.js')}
 </script>`)
 
-const ARTIFACT_OUT = 'dist/artifact/week-theme-preview.html'
+const OUTS: Record<Mode, string> = {
+  local: OUT,
+  artifact: 'dist/artifact/week-theme-preview.html',
+  pages: 'dist/pages/preview.html',
+}
 
 const main = () => {
   const { values } = parseArgs({
-    options: { open: { type: 'boolean', default: false }, artifact: { type: 'boolean', default: false } },
+    options: {
+      open: { type: 'boolean', default: false },
+      artifact: { type: 'boolean', default: false },
+      pages: { type: 'boolean', default: false },
+    },
   })
-  const generatedAt = new Date().toLocaleString('ja-JP', { hour12: false })
-  const out = values.artifact ? ARTIFACT_OUT : OUT
+  const mode: Mode = values.artifact ? 'artifact' : values.pages ? 'pages' : 'local'
+  const generatedAt = new Date().toLocaleString('ja-JP', { hour12: false, timeZone: 'Asia/Tokyo' })
+  const out = OUTS[mode]
   mkdirSync(dirname(out), { recursive: true })
-  writeFileSync(out, html(generatedAt, values.artifact))
+  writeFileSync(out, html(generatedAt, mode))
   console.log(`wrote ${out}`)
   if (values.open) execFileSync('open', [out])
 }
