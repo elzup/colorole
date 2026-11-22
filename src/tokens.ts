@@ -149,7 +149,65 @@ const contrast: Palette = {
   },
 }
 
-export const PALETTES: readonly Palette[] = [blueprint, contrast]
+// 白黒の間の灰。真ん中 (L 0.5 前後) は白文字・黒文字とも約 4.6:1 で頭打ちになり、補足文や意味色の入る余地が無い。
+// なので「暗い灰に白文字」(L 0.34) と「明るい灰に黒文字」(L 0.88) の 2 つに分ける (D-0010)
+const dim: Palette = {
+  id: 'dim',
+  label: 'Blueprint Dim',
+  selector: ':root[data-palette="dim"]',
+  comment: {
+    dark: 'Dim パレット (dark): 中灰の地に白文字。純黒より眩しさが少ない',
+    light: 'Dim パレット (light): 明るい灰の地に黒文字。純白より眩しさが少ない',
+  },
+  colors: {
+    dark: {
+      bg: '#35383c',
+      bg2: '#2d3134',
+      surface: '#3f4347',
+      surface2: '#4a4d51',
+      surfaceElevated: '#52565a',
+      gridLine: 'rgba(255, 255, 255, 0.05)',
+      border: 'rgba(255, 255, 255, 0.16)',
+      borderBright: 'rgba(255, 255, 255, 0.45)',
+      text: '#eff2f5',
+      textDim: '#c4cbd2',
+      accent: '#73d3f7',
+      accentDim: 'rgba(115, 211, 247, 0.14)',
+      green: '#7fe998',
+      greenDim: 'rgba(127, 233, 152, 0.14)',
+      red: '#f3a6a5',
+      redDim: 'rgba(243, 166, 165, 0.14)',
+      orange: '#f4c98d',
+      orangeDim: 'rgba(244, 201, 141, 0.14)',
+      violet: '#c9a3f5',
+      violetDim: 'rgba(201, 163, 245, 0.14)',
+    },
+    light: {
+      bg: '#d5d8db',
+      bg2: '#cbced2',
+      surface: '#e2e5e8',
+      surface2: '#ced1d5',
+      surfaceElevated: '#e9ebee',
+      gridLine: 'rgba(0, 0, 0, 0.05)',
+      border: 'rgba(0, 0, 0, 0.18)',
+      borderBright: 'rgba(0, 0, 0, 0.5)',
+      text: '#171b1f',
+      textDim: '#43484e',
+      accent: '#0b4c92',
+      accentDim: 'rgba(11, 76, 146, 0.1)',
+      green: '#0b5d2a',
+      greenDim: 'rgba(11, 93, 42, 0.1)',
+      red: '#9b1e22',
+      redDim: 'rgba(155, 30, 34, 0.1)',
+      orange: '#7d460b',
+      orangeDim: 'rgba(125, 70, 11, 0.1)',
+      violet: '#5a358c',
+      violetDim: 'rgba(90, 53, 140, 0.1)',
+    },
+  },
+}
+
+export const PALETTES: readonly Palette[] = [blueprint, contrast, dim]
 
 // 曜日テーマ: accent だけを七曜の字に寄せて回す。green / red / orange / violet は
 // 一致・失敗・注意・要確認の意味を持つので曜日で入れ替えない (pdash で決めた規約)。

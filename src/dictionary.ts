@@ -104,6 +104,8 @@ export const THEMES: readonly Theme[] = [
   { id: 'whiteprint', label: 'Whiteprint', family: 'blueprint', appearance: 'light', paletteId: 'blueprint' },
   { id: 'contrast-dark', label: 'Contrast Dark', family: 'contrast', appearance: 'dark', paletteId: 'contrast' },
   { id: 'contrast-light', label: 'Contrast Light', family: 'contrast', appearance: 'light', paletteId: 'contrast' },
+  { id: 'dim-dark', label: 'Dim Dark', family: 'dim', appearance: 'dark', paletteId: 'dim' },
+  { id: 'dim-light', label: 'Dim Light', family: 'dim', appearance: 'light', paletteId: 'dim' },
 ]
 
 // 曜日色は primary (action) から変える (D-0004)。意味色との衝突は strategies.ts の解き方で処理する

@@ -1,6 +1,6 @@
 // パレット × 明暗 × 曜日 × 方式 を 1 つの「バリアント」に解決する。生成器とプレビューはこれだけを見る
 import { type Appearance, type BaseColors, type Day, type Palette, APPEARANCES, DAYS, PALETTES } from './tokens.ts'
-import { alpha, contrast, hex, mix } from './color.ts'
+import { alpha, contrast, fromOklch, hex, mix, toOklch } from './color.ts'
 import { type Proposal, proposeKeyword } from './propose.ts'
 
 // current: keyword に曜日色を入れる (最初の実装)
@@ -41,9 +41,32 @@ export type Variant = {
   keywordProposal: Proposal | null
 }
 
+// 曜日色は keyword (本文の文字) にも使うので、地に対して本文基準を満たすまで明度だけ地から遠ざける。
+// 曜日色は明暗ごとに 1 色しか持たないので、灰の地 (dim) では暗い/明るい地向けの色がそのままだと読めない
+const DAY_MIN_CONTRAST = 4.5
+const LIFT_STEP = 0.01
+const LIFT_MAX = 0.4
+
+const CHROMA_STEP = 0.002
+const fitChroma = (l: number, c: number, h: number) =>
+  Array.from({ length: Math.ceil(c / CHROMA_STEP) + 1 }, (_, i) => Math.max(0, c - i * CHROMA_STEP))
+    .map((k) => fromOklch(l, k, h)).find((x) => x !== null) ?? null
+
+const readableDay = (color: string, bg: string, appearance: Appearance) => {
+  if (contrast(color, bg) >= DAY_MIN_CONTRAST) return color
+  const { l, c, h } = toOklch(color)
+  const sign = appearance === 'dark' ? 1 : -1
+  const steps = Array.from({ length: Math.round(LIFT_MAX / LIFT_STEP) }, (_, i) => l + sign * (i + 1) * LIFT_STEP)
+  // 明度を動かすと sRGB の彩度の余地が変わるので、その明度で収まる一番高い彩度を使う (くすませすぎない)
+  const found = steps.map((nl) => fitChroma(nl, c, h))
+    .find((x) => x !== null && contrast(x, bg) >= DAY_MIN_CONTRAST)
+  if (found === undefined || found === null) throw new Error(`曜日色 ${color} を地 ${bg} で読める明度にできません`)
+  return found
+}
+
 const applyDay = (base: BaseColors, day: Day | null, appearance: Appearance): BaseColors => {
   if (day === null) return base
-  const accent = day.color[appearance]
+  const accent = readableDay(day.color[appearance], hex(base.bg), appearance)
   return { ...base, accent, accentDim: alpha(accent, 0.14), gridLine: alpha(accent, 0.09) }
 }
 
