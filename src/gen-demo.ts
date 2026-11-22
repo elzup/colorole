@@ -1,18 +1,18 @@
-// 配色辞書の demo (dist/demo.html / dist/pages/index.html)。テーマ × 曜日 (core) × 染め具合 × 衝突の解き方 で
-// variant を生成し、同じ適用先を曜日ぶん並べて比べる。ペアのコントラストと key 変換表も出す。
+// 配色辞書の demo (dist/demo.html / dist/pages/index.html)。テーマ × core (groups/*.json のメンバー) × 染め具合 × 衝突の解き方 で
+// variant を生成し、同じ適用先をグループのメンバーぶん並べて比べる。ペアのコントラストと key 変換表も出す。
 //   node src/gen-demo.ts [--pages] [--open]
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import { dirname } from 'node:path'
 import { parseArgs } from 'node:util'
-import { DAYS } from './tokens.ts'
+import { ALL_MEMBERS, GROUPS, memberSlug } from './groups.ts'
 import { AAA_BODY, type Dictionary, PAIR_MIN, ROLES, ROLE_PAIRS, ROLE_SPECS, THEMES, checkPairs, solidify } from './dictionary.ts'
 import { TARGETS, describeRef, refRole, resolveRef } from './targets.ts'
 import { DISTINCT, STRATEGIES, nearestSemantic } from './strategies.ts'
 import { TINTS, type VariantSpec, generate } from './generate.ts'
 import { embedJson, read } from './page-shell.ts'
 
-const DAY_KEYS = [null, ...DAYS.map((d) => d.key)] as const
+const CORES = [null, ...ALL_MEMBERS]
 
 // 変換表のうち「役割そのまま」以外 (on() / alpha) の値だけを先に計算しておく。
 // 役割そのままの key は client が solid から引く (適用先 × key の値を全部埋め込むと数 MB になるため)
@@ -33,7 +33,7 @@ const entryOf = (spec: VariantSpec) => {
 
 const buildData = () => ({
   themes: THEMES,
-  days: DAYS.map((d) => ({ key: d.key, ja: d.ja, label: d.label, motif: d.motif })),
+  groups: GROUPS.map((g) => ({ id: g.id, label: g.label, members: g.members.map((m) => ({ key: memberSlug(m), ja: m.ja, label: m.label, motif: m.motif })) })),
   roles: ROLES.map((r) => ({ role: r, ...ROLE_SPECS[r] })),
   pairs: ROLE_PAIRS,
   pairMin: PAIR_MIN,
@@ -54,14 +54,15 @@ const buildData = () => ({
     })),
   })),
   entries: Object.fromEntries(
-    THEMES.flatMap((theme) => DAY_KEYS.flatMap((day) => TINTS.flatMap((tint) => STRATEGIES.map((st) =>
-      [`${theme.id}|${day ?? 'none'}|${tint}|${st.id}`, entryOf({ theme, day, tint, strategy: st.id })])))),
+    THEMES.flatMap((theme) => CORES.flatMap((core) => TINTS.flatMap((tint) => STRATEGIES.map((st) =>
+      [`${theme.id}|${core === null ? 'none' : memberSlug(core)}|${tint}|${st.id}`, entryOf({ theme, core, tint, strategy: st.id })])))),
   ),
 })
 
 const body = (generatedAt: string) => `<header class="dm-head">
-  <div class="dm-head__title"><b>Blueprint Color Dictionary</b><span>core color (曜日色) を主軸に variant 全体を生成し、適用先へは key 変換表だけで流す</span></div>
+  <div class="dm-head__title"><b>Blueprint Color Dictionary</b><span>core color (曜日などのグループ) を主軸に variant 全体を生成し、適用先へは key 変換表だけで流す</span></div>
   <div class="dm-controls">
+    <label>グループ<span class="dm-seg" id="dm-group"></span></label>
     <label>テーマ<span class="dm-seg" id="dm-theme"></span></label>
     <label>染め具合<span class="dm-seg" id="dm-tint"></span></label>
     <label>衝突の解き方<span class="dm-seg" id="dm-strategy"></span></label>
@@ -69,8 +70,8 @@ const body = (generatedAt: string) => `<header class="dm-head">
 </header>
 <main class="dm-main">
   <section class="dm-sec" id="week">
-    <h2>週の並び</h2>
-    <p class="dm-note">同じ適用先を、core = 曜日色 で生成した 8 通りの variant で塗って並べる。押すとその曜日を下で詳しく見る。</p>
+    <h2 id="dm-week-title">並び</h2>
+    <p class="dm-note">同じ適用先を、グループの各色を core にして生成した variant で塗って並べる (先頭は core なし)。押すとその色を下で詳しく見る。</p>
     <div class="dm-switch">適用先<span class="dm-seg js-target-tabs"></span></div>
     <div class="dm-week" id="dm-week"></div>
   </section>
@@ -92,7 +93,7 @@ const body = (generatedAt: string) => `<header class="dm-head">
   <section class="dm-sec" id="dict">
     <h2>配色辞書</h2>
     <div class="dm-switch">適用先<span class="dm-seg js-target-tabs"></span></div>
-    <p class="dm-note">選んだ曜日の variant。適用先が読むのはこの表だけ。各役割の右に、選んだ適用先でその色を受ける key を出す。</p>
+    <p class="dm-note">選んだ core の variant。適用先が読むのはこの表だけ。各役割の右に、選んだ適用先でその色を受ける key を出す。</p>
     <div class="dm-dict" id="dm-dict"></div>
   </section>
   <section class="dm-sec" id="pairs">

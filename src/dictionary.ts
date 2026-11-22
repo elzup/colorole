@@ -2,7 +2,7 @@
 // 適用先 (CSS / エディタ / UI framework) はバリアントの内部構造ではなくこの辞書だけを読む。
 // 色名 (green / red) でなく役割名 (success / danger) にするのは、適用先の枠が役割で切られているため
 import { contrast, flatten } from './color.ts'
-import { type Appearance, type DayKey, DAYS, PALETTES } from './tokens.ts'
+import { type Appearance, type Day, PALETTES } from './tokens.ts'
 import { type Variant, buildVariant } from './variants.ts'
 
 export type RoleGroup = 'surface' | 'line' | 'text' | 'accent' | 'semantic'
@@ -109,11 +109,11 @@ export const THEMES: readonly Theme[] = [
 ]
 
 // 曜日色は primary (action) から変える (D-0004)。意味色との衝突は strategies.ts の解き方で処理する
-export const resolveTheme = (theme: Theme, dayKey: DayKey | null): Dictionary => {
+// core = groups/*.json のメンバー (曜日など)。null は core なし (テーマの accent のまま)
+export const resolveTheme = (theme: Theme, core: Day | null): Dictionary => {
   const palette = PALETTES.find((p) => p.id === theme.paletteId)
   if (palette === undefined) throw new Error(`palette ${theme.paletteId} がありません`)
-  const day = dayKey === null ? null : (DAYS.find((d) => d.key === dayKey) ?? null)
-  return resolve(buildVariant(palette, theme.appearance, day, 'current'))
+  return resolve(buildVariant(palette, theme.appearance, core, 'current'))
 }
 
 // ---- 背景 × 文字 のペア。WCAG 2.x: body = 1.4.3 本文 4.5:1、ui = 1.4.11 非テキスト 3:1

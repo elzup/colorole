@@ -1,5 +1,6 @@
 // パレット × 明暗 × 曜日 × 方式 を 1 つの「バリアント」に解決する。生成器とプレビューはこれだけを見る
-import { type Appearance, type BaseColors, type Day, type Palette, APPEARANCES, DAYS, PALETTES } from './tokens.ts'
+import { type Appearance, type BaseColors, type Day, type Palette, APPEARANCES, PALETTES } from './tokens.ts'
+import { ALL_MEMBERS, memberSlug } from './groups.ts'
 import { alpha, contrast, fromOklch, hex, mix, toOklch } from './color.ts'
 import { type Proposal, proposeKeyword } from './propose.ts'
 
@@ -113,7 +114,7 @@ export const variantName = (palette: Palette, appearance: Appearance, day: Day |
 }
 
 const slugOf = (palette: Palette, appearance: Appearance, day: Day | null) =>
-  [palette.id, appearance, day?.key].filter(Boolean).join('-')
+  [palette.id, appearance, day === null ? undefined : memberSlug(day)].filter(Boolean).join('-')
 
 export const buildVariant = (palette: Palette, appearance: Appearance, day: Day | null, scheme: Scheme = 'current'): Variant => {
   const raw = toHexColors(palette.colors[appearance])
@@ -139,6 +140,6 @@ export const buildVariant = (palette: Palette, appearance: Appearance, day: Day 
 export const allVariants = (scheme: Scheme = 'current'): Variant[] =>
   PALETTES.flatMap((palette) =>
     APPEARANCES.flatMap((appearance) =>
-      [null, ...DAYS].map((day) => buildVariant(palette, appearance, day, scheme)),
+      [null, ...ALL_MEMBERS].map((day) => buildVariant(palette, appearance, day, scheme)),
     ),
   )

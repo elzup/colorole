@@ -1,5 +1,6 @@
-// Blueprint テーマの唯一の正本。CSS / VSCode / Zed はすべてここから生成する。
+// テーマ (パレット) の正本。core 色のグループは groups/*.json。CSS / VSCode / Zed はすべてこの 2 つから生成する。
 // 値は CSS にそのまま書ける形 (#hex / rgba()) で持つ。エディタ用の hex 変換は color.ts が行う。
+import { LEGACY_GROUP, groupOf } from './groups.ts'
 
 export type Appearance = 'dark' | 'light'
 export const APPEARANCES: readonly Appearance[] = ['dark', 'light']
@@ -209,20 +210,11 @@ const dim: Palette = {
 
 export const PALETTES: readonly Palette[] = [blueprint, contrast, dim]
 
-// 曜日テーマ: accent だけを七曜の字に寄せて回す。green / red / orange / violet は
-// 一致・失敗・注意・要確認の意味を持つので曜日で入れ替えない (pdash で決めた規約)。
-export type DayKey = 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat'
-export type Day = { key: DayKey; label: string; ja: string; motif: string; color: Record<Appearance, string> }
-
-export const DAYS: readonly Day[] = [
-  { key: 'sun', label: 'Sun', ja: '日', motif: '橙 (太陽)', color: { dark: '#ff9a3c', light: '#b04e00' } },
-  { key: 'mon', label: 'Mon', ja: '月', motif: '藍 (月光)', color: { dark: '#9fa8ff', light: '#3b3fae' } },
-  { key: 'tue', label: 'Tue', ja: '火', motif: '紅', color: { dark: '#ff4f7b', light: '#c0003c' } },
-  { key: 'wed', label: 'Wed', ja: '水', motif: 'シアン', color: { dark: '#2ee0ff', light: '#006b8f' } },
-  { key: 'thu', label: 'Thu', ja: '木', motif: '若葉', color: { dark: '#9be33a', light: '#3f7400' } },
-  { key: 'fri', label: 'Fri', ja: '金', motif: '山吹', color: { dark: '#ffd23f', light: '#8a6a00' } },
-  { key: 'sat', label: 'Sat', ja: '土', motif: '牡丹', color: { dark: '#ee95d1', light: '#7f366a' } },
-]
+// core 色 (曜日など) の正本は groups/*.json (src/groups.ts で読む)。core は accent / primary だけを回す。
+// green / red / orange / violet は一致・失敗・注意・要確認の意味を持つので core で入れ替えない (pdash で決めた規約)。
+// Day / DAYS は曜日グループを指す互換の名前 (switch-day などは曜日を前提にしている)
+export type { CoreMember as Day } from './groups.ts'
+export const DAYS = groupOf(LEGACY_GROUP).members
 
 // 曜日 accent から作る淡色の濃さ (pdash の値)。accent-dim が背景、grid-line が方眼
 export const DAY_MIX = { accentDim: 14, gridLine: 9 }

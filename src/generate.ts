@@ -3,7 +3,7 @@
 // 意味色は寄せない (一致・失敗・注意・要確認の意味を曜日で変えないため)
 import { alpha, fromOklch, parse, toOklch } from './color.ts'
 import { type Dictionary, type Role, type Theme, onColorOf, resolveTheme } from './dictionary.ts'
-import type { DayKey } from './tokens.ts'
+import type { CoreMember } from './groups.ts'
 import { type StrategyId, strategyOf } from './strategies.ts'
 
 // 0 = テーマのまま (曜日は accent / primary だけ)、1 = 下地まで core の色相に染める
@@ -48,10 +48,10 @@ export const tintNeutrals = (d: Dictionary, coreColor: string, tint: number): Di
   return { ...next, onAccent: onColorOf(next.bg, next.text, next.accent), onAction: onColorOf(next.bg, next.text, next.action) }
 }
 
-export type VariantSpec = { theme: Theme; day: DayKey | null; tint: Tint; strategy: StrategyId }
+export type VariantSpec = { theme: Theme; core: CoreMember | null; tint: Tint; strategy: StrategyId }
 
 // テーマ (明度の骨格) → core で染める → primary と意味色の衝突を解く
-export const generate = ({ theme, day, tint, strategy }: VariantSpec): Dictionary => {
-  const base = resolveTheme(theme, day)
+export const generate = ({ theme, core, tint, strategy }: VariantSpec): Dictionary => {
+  const base = resolveTheme(theme, core)
   return strategyOf(strategy).apply(tintNeutrals(base, base.accent, tint))
 }

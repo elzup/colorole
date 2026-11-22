@@ -1,0 +1,15 @@
+{
+  "$schema": "./schema.json",
+  "id": "week",
+  "label": "曜日",
+  "note": "七曜の字に寄せた core 色。テーマ名・出力ファイル名は互換のためグループ名を付けない (Blueprint Dark · Sun / blueprint-dark-sun)",
+  "members": [
+    { "key": "sun", "label": "Sun", "ja": "日", "motif": "橙 (太陽)", "color": { "dark": "#ff9a3c", "light": "#b04e00" } },
+    { "key": "mon", "label": "Mon", "ja": "月", "motif": "藍 (月光)", "color": { "dark": "#9fa8ff", "light": "#3b3fae" } },
+    { "key": "tue", "label": "Tue", "ja": "火", "motif": "紅", "color": { "dark": "#ff4f7b", "light": "#c0003c" } },
+    { "key": "wed", "label": "Wed", "ja": "水", "motif": "シアン", "color": { "dark": "#2ee0ff", "light": "#006b8f" } },
+    { "key": "thu", "label": "Thu", "ja": "木", "motif": "若葉", "color": { "dark": "#9be33a", "light": "#3f7400" } },
+    { "key": "fri", "label": "Fri", "ja": "金", "motif": "山吹", "color": { "dark": "#ffd23f", "light": "#8a6a00" } },
+    { "key": "sat", "label": "Sat", "ja": "土", "motif": "牡丹", "color": { "dark": "#ee95d1", "light": "#7f366a" } }
+  ]
+}

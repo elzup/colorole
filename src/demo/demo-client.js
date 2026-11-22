@@ -18,13 +18,14 @@ const keysEl = (role) => {
 const renderWeek = () => {
   const t = currentTarget()
   const sim = SIMS[t.id] ?? simDoc
-  document.getElementById('dm-week').replaceChildren(...DAY_KEYS.map((key) => {
+  document.getElementById('dm-week-title').textContent = `${groupNow().label} の並び`
+  document.getElementById('dm-week').replaceChildren(...coreKeys().map((key) => {
     const e = entryAt(key)
     const card = h('button', { type: 'button', class: `dm-day${key === state.day ? ' is-on' : ''}` }, [
       h('div', { class: 'dm-day__head' }, [
         chip(e.solid.accent),
         h('b', { text: dayLabel(key) }),
-        h('span', { class: 'dm-dim', text: key === 'none' ? 'テーマの accent' : DATA.days.find((d) => d.key === key).motif }),
+        h('span', { class: 'dm-dim', text: key === 'none' ? 'テーマの accent' : memberAt(key).motif }),
       ]),
       h('div', { class: 'dm-sim-wrap', style: simVars(e) }, [sim()]),
     ])
@@ -64,7 +65,7 @@ const renderClash = () => {
     h('span', { text: `${currentTarget().label} で primary (action) を受ける key: ` }), keysEl('action'))
   document.getElementById('dm-clash-head').replaceChildren(h('tr', {}, [h('th', { text: '曜日' }),
     ...DATA.strategies.map((x) => h('th', { text: x.label, class: x.id === state.strategy ? 'is-current' : '' }))]))
-  document.getElementById('dm-clash').replaceChildren(...DATA.days.map((d) => h('tr', { class: d.key === state.day ? 'is-current' : '' }, [
+  document.getElementById('dm-clash').replaceChildren(...members().map((d) => h('tr', { class: d.key === state.day ? 'is-current' : '' }, [
     h('td', { text: `${d.ja} ${d.motif}` }),
     ...DATA.strategies.map((x) => {
       const e = entryAt(d.key, x.id)
@@ -125,12 +126,13 @@ const TINT_TEXT = { 0: 'テーマのまま', 0.5: '半分 50%', 1: 'core 100%' }
 const segButtons = (selector, key, options) => {
   document.querySelectorAll(selector).forEach((el) => el.replaceChildren(...options.map(([value, text]) => {
     const b = h('button', { type: 'button', class: state[key] === value ? 'active' : '', text })
-    b.addEventListener('click', () => { state[key] = value; update() })
+    b.addEventListener('click', () => { state[key] = value; fixCore(); update() })
     return b
   })))
 }
 
 const update = () => {
+  segButtons('#dm-group', 'group', DATA.groups.map((g) => [g.id, g.label]))
   segButtons('#dm-theme', 'theme', DATA.themes.map((t) => [t.id, t.label]))
   segButtons('#dm-tint', 'tint', DATA.tints.map((x) => [String(x), TINT_TEXT[x] ?? `${Math.round(x * 100)}%`]))
   segButtons('#dm-strategy', 'strategy', DATA.strategies.map((x) => [x.id, x.label]))
