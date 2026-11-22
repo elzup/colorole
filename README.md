@@ -17,7 +17,7 @@ src/switch-day.ts  → VSCode / Zed の設定を今日の曜日バリアント�
 |---|---|---|
 | base | bg / surface / border / text / text-dim | 変わらない |
 | semantic | green = 一致 / red = 失敗 / orange = 注意 / violet = 要確認 | **変わらない** (意味を持つため) |
-| day | accent (keyword・カーソル・選択・タブの縁・ボタン) | 日=橙 / 月=藍 / 火=紅 / 水=シアン / 木=若葉 / 金=山吹 / 土=土色 |
+| day | accent (keyword・カーソル・選択・タブの縁・ボタン) | 日=橙 / 月=藍 / 火=紅 / 水=シアン / 木=若葉 / 金=山吹 / 土=牡丹 |
 
 関数名・リンク・info は曜日で回さない元の accent (`fixedAccent`) を使う。
 

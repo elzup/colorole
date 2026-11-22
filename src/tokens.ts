@@ -163,7 +163,7 @@ export const DAYS: readonly Day[] = [
   { key: 'wed', label: 'Wed', ja: '水', motif: 'シアン', color: { dark: '#2ee0ff', light: '#006b8f' } },
   { key: 'thu', label: 'Thu', ja: '木', motif: '若葉', color: { dark: '#9be33a', light: '#3f7400' } },
   { key: 'fri', label: 'Fri', ja: '金', motif: '山吹', color: { dark: '#ffd23f', light: '#8a6a00' } },
-  { key: 'sat', label: 'Sat', ja: '土', motif: '土色', color: { dark: '#d4975f', light: '#7a4420' } },
+  { key: 'sat', label: 'Sat', ja: '土', motif: '牡丹', color: { dark: '#ee95d1', light: '#7f366a' } },
 ]
 
 // 曜日 accent から作る淡色の濃さ (pdash の値)。accent-dim が背景、grid-line が方眼
