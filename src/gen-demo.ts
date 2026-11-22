@@ -82,6 +82,7 @@ const body = (generatedAt: string) => `<header class="dm-head">
   </section>
   <section class="dm-sec" id="clash">
     <h2>primary × 意味色</h2>
+    <div class="dm-switch">適用先<span class="dm-seg js-target-tabs"></span></div>
     <p class="dm-note">primary (action) = core。意味色 (success / danger / warning / notice) と近いと「保存ボタンがエラーに見える」。
       OKLab 距離 ${DISTINCT.near} 以上で見分けられる、${DISTINCT.clash} 未満は衝突。</p>
     <p class="dm-note" id="dm-strategy-note"></p>
@@ -90,14 +91,16 @@ const body = (generatedAt: string) => `<header class="dm-head">
   </section>
   <section class="dm-sec" id="dict">
     <h2>配色辞書</h2>
-    <p class="dm-note">選んだ曜日の variant。適用先が読むのはこの表だけ。</p>
+    <div class="dm-switch">適用先<span class="dm-seg js-target-tabs"></span></div>
+    <p class="dm-note">選んだ曜日の variant。適用先が読むのはこの表だけ。各役割の右に、選んだ適用先でその色を受ける key を出す。</p>
     <div class="dm-dict" id="dm-dict"></div>
   </section>
   <section class="dm-sec" id="pairs">
     <h2>背景 × 文字</h2>
+    <div class="dm-switch">適用先<span class="dm-seg js-target-tabs"></span></div>
     <p class="dm-note">WCAG 2.x: 本文 = 1.4.3 (4.5:1)、UI 部品 = 1.4.11 (3:1)。AAA (1.4.6, 7:1) は参考表示。</p>
     <div class="dm-scroll"><table class="dm-table">
-      <thead><tr><th>見本</th><th>文字 / 背景</th><th>用途</th><th>比 / 基準</th><th>判定</th></tr></thead>
+      <thead><tr><th>見本</th><th>文字 / 背景</th><th id="dm-pairs-keyhead">適用先の key</th><th>用途</th><th>比 / 基準</th><th>判定</th></tr></thead>
       <tbody id="dm-pairs"></tbody></table></div>
   </section>
   <footer class="dm-foot">

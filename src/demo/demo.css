@@ -63,6 +63,10 @@ h2 { font-size: 18px; margin: 0 0 4px; }
 .dm-role__name { font-size: 12px; overflow-wrap: anywhere; }
 .dm-role__value { font-family: var(--mono); font-size: 11px; color: var(--ui-muted); overflow-wrap: anywhere; }
 .dm-role__note { grid-column: 2 / -1; font-size: 11px; color: var(--ui-muted); }
+.dm-role__keys { grid-column: 2 / -1; }
+.dm-keys { display: inline-flex; flex-wrap: wrap; gap: 3px; vertical-align: middle; }
+.dm-keys code { font-size: 10.5px; padding: 0 5px; border-radius: 4px; background: var(--ui-surface2); border: 1px solid var(--ui-border); }
+.dm-keys.is-none { font-size: 11px; color: var(--ui-muted); font-style: italic; }
 .dm-sample { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 600; border: 1px solid var(--ui-border); white-space: nowrap; }
 
 /* 適用先 */

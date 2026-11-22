@@ -3,6 +3,18 @@
 // ---- 週の並び: 同じ適用先を曜日 8 通りの variant で塗る
 const currentTarget = () => DATA.targets.find((t) => t.id === state.target) ?? DATA.targets[0]
 
+// 役割を受ける適用先の key。役割そのまま / on(役割) / 役割 @α% のどれで参照していても拾う
+const keysOf = (role) => currentTarget().rows
+  .filter((r) => r.ref === role || r.ref === `on(${role})` || r.ref.startsWith(`${role} @`))
+  .map((r) => (r.ref === role ? r.key : `${r.key} ← ${r.ref}`))
+
+const keysEl = (role) => {
+  const keys = keysOf(role)
+  return keys.length === 0
+    ? h('span', { class: 'dm-keys is-none', text: `${currentTarget().label} では使わない` })
+    : h('span', { class: 'dm-keys' }, keys.map((k) => h('code', { text: k })))
+}
+
 const renderWeek = () => {
   const t = currentTarget()
   const sim = SIMS[t.id] ?? simDoc
@@ -47,7 +59,9 @@ const distLevel = (d) => (d >= DATA.distinct.near ? 'is-pass' : d >= DATA.distin
 
 const renderClash = () => {
   const s = DATA.strategies.find((x) => x.id === state.strategy)
-  document.getElementById('dm-strategy-note').textContent = `今の解き方: ${s.label} — ${s.note}`
+  document.getElementById('dm-strategy-note').replaceChildren(
+    h('span', { text: `今の解き方: ${s.label} — ${s.note}` }), h('br'),
+    h('span', { text: `${currentTarget().label} で primary (action) を受ける key: ` }), keysEl('action'))
   document.getElementById('dm-clash-head').replaceChildren(h('tr', {}, [h('th', { text: '曜日' }),
     ...DATA.strategies.map((x) => h('th', { text: x.label, class: x.id === state.strategy ? 'is-current' : '' }))]))
   document.getElementById('dm-clash').replaceChildren(...DATA.days.map((d) => h('tr', { class: d.key === state.day ? 'is-current' : '' }, [
@@ -77,6 +91,7 @@ const renderDict = () => {
           r.isDaily ? h('span', { class: 'dm-daily-mark', text: '曜' }) : h('span'),
           h('span', { class: 'dm-role__value', text: e.solid[r.role] }),
           h('span', { class: 'dm-role__note', text: r.note }),
+          h('span', { class: 'dm-role__keys' }, [keysEl(r.role)]),
         ])),
     ])))
 }
@@ -95,6 +110,7 @@ const renderPairs = () => {
     return h('tr', {}, [
       h('td', {}, [h('span', { class: 'dm-sample', text: 'Aa 文字', style: { color: e.solid[p.fg], background: e.solid[p.bg] } })]),
       h('td', {}, [h('code', { text: `${p.fg} / ${p.bg}` }), h('div', { class: 'dm-dim', text: p.note })]),
+      h('td', {}, [h('div', {}, [h('span', { class: 'dm-dim', text: '文字 ' }), keysEl(p.fg)]), h('div', {}, [h('span', { class: 'dm-dim', text: '背景 ' }), keysEl(p.bg)])]),
       h('td', { text: USE_TEXT[p.use] }),
       h('td', { class: 'dm-num', text: `${ratio.toFixed(2)} / ${min}` }),
       h('td', {}, [h('span', { class: `dm-badge ${level}`, text: label })]),
