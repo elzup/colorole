@@ -12,6 +12,8 @@
     "preview": "node src/gen-preview.ts --open",
     "audit": "node src/audit.ts",
     "demo": "node src/gen-demo.ts --open",
-    "build:pages": "node src/gen-demo.ts --pages && node src/gen-preview.ts --pages"
+    "build:pages": "node src/gen-demo.ts --pages && node src/gen-preview.ts --pages && node src/gen-colors.ts --pages",
+    "docs": "node src/gen-readme.ts && node src/gen-colors.ts",
+    "pick": "node src/pick.ts"
   }
 }

@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node src/gen-demo.ts --pages && node src/gen-preview.ts --pages
+      - run: node src/gen-demo.ts --pages && node src/gen-preview.ts --pages && node src/gen-colors.ts --pages
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist/pages
