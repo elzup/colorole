@@ -4,7 +4,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { parseArgs } from 'node:util'
-import { type Day, DAYS, PALETTES } from './tokens.ts'
+import { type Day, DAYS, PALETTES, appearancesOf } from './tokens.ts'
 import { variantName } from './variants.ts'
 
 const VSCODE_SETTINGS = `${homedir()}/Library/Application Support/Code/User/settings.json`
@@ -40,7 +40,8 @@ const editZed = (src: string, dark: string, light: string) => {
 
 const planEdits = (day: Day, paletteId: string): Edit[] => {
   const palette = PALETTES.find((p) => p.id === paletteId)
-  if (palette === undefined) throw new Error(`--palette は ${PALETTES.map((p) => p.id).join(' / ')}`)
+  const pairs = PALETTES.filter((p) => appearancesOf(p).length === 2)
+  if (palette === undefined || !pairs.includes(palette)) throw new Error(`--palette は ${pairs.map((p) => p.id).join(' / ')} (エディタの dark / light の対になるもの)`)
   const dark = variantName(palette, 'dark', day)
   const light = variantName(palette, 'light', day)
   const read = (f: string) => (existsSync(f) ? readFileSync(f, 'utf8') : null)

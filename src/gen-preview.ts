@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process'
 import { dirname } from 'node:path'
 import { type Mode, embedJson, pageDocument, read } from './page-shell.ts'
 import { parseArgs } from 'node:util'
-import { APPEARANCES, DAYS, PALETTES } from './tokens.ts'
+import { DAYS, PALETTES, appearancesOf } from './tokens.ts'
 import { type Scheme, type Variant, SCHEMES, buildVariant } from './variants.ts'
 import { alpha, contrast, flatten } from './color.ts'
 import { auditVariant, hoverOf, selectionOf } from './audit.ts'
@@ -83,7 +83,7 @@ const swatchGroups = (v: Variant) => {
 const buildData = () => {
   const variants: Record<string, unknown> = {}
   const swatches: Record<string, unknown> = {}
-  SCHEMES.forEach((scheme) => PALETTES.forEach((p) => APPEARANCES.forEach((app) => {
+  SCHEMES.forEach((scheme) => PALETTES.forEach((p) => appearancesOf(p).forEach((app) => {
     swatches[[scheme, p.id, app].join('|')] = swatchGroups(buildVariant(p, app, null, scheme))
     ;[null, ...DAYS].forEach((day) => {
       variants[[scheme, p.id, app, day?.key ?? 'none'].join('|')] = variantEntry(buildVariant(p, app, day, scheme))
@@ -113,7 +113,7 @@ const html = (generatedAt: string, mode: Mode) => wrapDocument(mode, `<div class
   <div class="main">
     <div class="eyebrow">THEME PREVIEW</div>
     <h1>Week Theme プレビュー</h1>
-    <div class="subtitle">対象: <b>blueprint-theme (tokens.ts)</b><br>生成: <b>${generatedAt}</b></div>
+    <div class="subtitle">対象: <b>colorole (tokens.ts)</b><br>生成: <b>${generatedAt}</b></div>
 
     <div class="pv-controls">
       <span><label>方式</label><span class="seg" id="pv-scheme"></span></span>
@@ -153,7 +153,7 @@ const html = (generatedAt: string, mode: Mode) => wrapDocument(mode, `<div class
       <tbody id="pv-summary"></tbody></table></div></div>
 
     <div class="footer-note">
-      generated: node src/gen-preview.ts (~/.ghq/github.com/elzup/blueprint-theme)<br>
+      generated: node src/gen-preview.ts (~/.ghq/github.com/elzup/colorole)<br>
       source: src/tokens.ts / src/variants.ts / src/audit.ts、ページの配色は agent-setup/templates/report-theme.css<br>
       ${generatedAt} &middot; 案 a の keyword は propose.ts が「ほかの構文色から最も遠い色相」を自動で選んだ仮の色
     </div>

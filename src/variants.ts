@@ -1,5 +1,5 @@
 // パレット × 明暗 × 曜日 × 方式 を 1 つの「バリアント」に解決する。生成器とプレビューはこれだけを見る
-import { type Appearance, type BaseColors, type Day, type Palette, APPEARANCES, PALETTES } from './tokens.ts'
+import { type Appearance, type BaseColors, type Day, type Palette, PALETTES, appearancesOf, colorsOf } from './tokens.ts'
 import { ALL_MEMBERS, memberSlug } from './groups.ts'
 import { alpha, contrast, fromOklch, hex, mix, toOklch } from './color.ts'
 import { type Proposal, proposeKeyword } from './propose.ts'
@@ -117,8 +117,8 @@ const slugOf = (palette: Palette, appearance: Appearance, day: Day | null) =>
   [palette.id, appearance, day === null ? undefined : memberSlug(day)].filter(Boolean).join('-')
 
 export const buildVariant = (palette: Palette, appearance: Appearance, day: Day | null, scheme: Scheme = 'current'): Variant => {
-  const raw = toHexColors(palette.colors[appearance])
-  const base = toHexColors(applyDay(palette.colors[appearance], day, appearance))
+  const raw = toHexColors(colorsOf(palette, appearance))
+  const base = toHexColors(applyDay(colorsOf(palette, appearance), day, appearance))
   const fixedAccent = raw.accent
   const proposal = scheme === 'a' ? fixedKeyword(palette, appearance, raw, fixedAccent) : null
   const keyword = proposal === null ? base.accent : proposal.color
@@ -139,7 +139,7 @@ export const buildVariant = (palette: Palette, appearance: Appearance, day: Day 
 
 export const allVariants = (scheme: Scheme = 'current'): Variant[] =>
   PALETTES.flatMap((palette) =>
-    APPEARANCES.flatMap((appearance) =>
+    appearancesOf(palette).flatMap((appearance) =>
       [null, ...ALL_MEMBERS].map((day) => buildVariant(palette, appearance, day, scheme)),
     ),
   )

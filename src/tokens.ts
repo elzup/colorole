@@ -28,12 +28,21 @@ export type BaseColors = {
   violetDim: string
 }
 
+// 中灰 (mid) のように明暗の片方しか無いパレットがあるので、dark / light はどちらか一方でもよい
 export type Palette = {
   id: string
   label: string
   selector: string
-  comment: Record<Appearance, string>
-  colors: Record<Appearance, BaseColors>
+  comment: Partial<Record<Appearance, string>>
+  colors: Partial<Record<Appearance, BaseColors>>
+}
+
+export const appearancesOf = (p: Palette): Appearance[] => APPEARANCES.filter((ap) => p.colors[ap] !== undefined)
+
+export const colorsOf = (p: Palette, ap: Appearance): BaseColors => {
+  const colors = p.colors[ap]
+  if (colors === undefined) throw new Error(`パレット ${p.id} に ${ap} がありません`)
+  return colors
 }
 
 const blueprint: Palette = {
@@ -151,7 +160,8 @@ const contrast: Palette = {
 }
 
 // 白黒の間の灰。真ん中 (L 0.5 前後) は白文字・黒文字とも約 4.6:1 で頭打ちになり、補足文や意味色の入る余地が無い。
-// なので「暗い灰に白文字」(L 0.34) と「明るい灰に黒文字」(L 0.88) の 2 つに分ける (D-0010)
+// なので「暗い灰に白文字」(L 0.34) と「明るい灰に黒文字」(L 0.88) の 2 つに分ける (D-0010)。
+// 間の中灰は mid パレット (黒 / 濃灰 / 中灰 / 淡灰 / 白 の 5 段は Theme.step で並べる、D-0014)
 const dim: Palette = {
   id: 'dim',
   label: 'Blueprint Dim',
@@ -208,7 +218,42 @@ const dim: Palette = {
   },
 }
 
-export const PALETTES: readonly Palette[] = [blueprint, contrast, dim]
+// 中灰 (L 0.68)。濃灰 (0.34) と淡灰 (0.88) の間を等分に近く埋める。L 0.5 前後は白文字・黒文字とも 4.6:1 で頭打ちなので
+// 明るい側に寄せて黒文字を載せる (本文 6.7:1)。暗い側 (L 0.44・白文字) より段の間隔が揃い、本文の余裕も同程度。
+// 補足文・意味色はすべて 4.5:1 ちょうどまで暗くするしかなく、意味色どうしの距離は
+// 他のテーマより近い (最小 0.091、緑-橙)。色だけで区別させず文字・形と併用する前提 (AQ-0005)
+const mid: Palette = {
+  id: 'mid',
+  label: 'Blueprint Mid',
+  selector: ':root[data-palette="mid"]',
+  comment: { light: 'Mid パレット: 中灰の地に黒文字。白にも黒にも寄らない地' },
+  colors: {
+    light: {
+      bg: '#96989b',
+      bg2: '#8d8f92',
+      surface: '#a2a5a8',
+      surface2: '#9c9fa1',
+      surfaceElevated: '#a8abae',
+      gridLine: 'rgba(0, 0, 0, 0.06)',
+      border: 'rgba(0, 0, 0, 0.2)',
+      borderBright: 'rgba(0, 0, 0, 0.6)',
+      text: '#0c0d0f',
+      textDim: '#2e3133',
+      accent: '#002655',
+      accentDim: 'rgba(0, 38, 85, 0.1)',
+      green: '#002c02',
+      greenDim: 'rgba(0, 44, 2, 0.1)',
+      red: '#500020',
+      redDim: 'rgba(80, 0, 32, 0.1)',
+      orange: '#381f00',
+      orangeDim: 'rgba(56, 31, 0, 0.1)',
+      violet: '#370067',
+      violetDim: 'rgba(55, 0, 103, 0.1)',
+    },
+  },
+}
+
+export const PALETTES: readonly Palette[] = [blueprint, contrast, dim, mid]
 
 // core 色 (曜日など) の正本は groups/*.json (src/groups.ts で読む)。core は accent / primary だけを回す。
 // green / red / orange / violet は一致・失敗・注意・要確認の意味を持つので core で入れ替えない (pdash で決めた規約)。

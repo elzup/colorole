@@ -2,7 +2,7 @@
 //   node src/gen-readme.ts
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { GROUPS, type CoreGroup, memberSlug } from './groups.ts'
-import { type Role, THEMES } from './dictionary.ts'
+import { type Role, STEP_LABEL, THEMES } from './dictionary.ts'
 import { contrast } from './color.ts'
 import { dictFor, EXPORT_DEFAULTS } from './export.ts'
 
@@ -61,6 +61,8 @@ const TABLE_ROLES: Role[] = ['bg', 'surface', 'text', 'textMuted', 'border', 'ac
 const groupSection = (g: CoreGroup) => [
   `### ${g.label} (\`groups/${g.id}.json\`)`,
   '',
+  `種類: ${g.kind === 'rotation' ? 'rotation (日によって入れ替わる。並べて見分けられる必要がある)' : 'choice (好みで 1 つ選ぶ。メンバー同士は近くてよい)'}`,
+  '',
   ...(g.note === '' ? [] : [g.note, '']),
   `![${g.label}](docs/swatches/group-${g.id}.svg)`,
   '',
@@ -76,6 +78,8 @@ const themeSection = () => [
   '![themes](docs/swatches/themes.svg)',
   '',
   `core なしの値。全 24 役割と core ごとの値は \`colors.json\` にある。`,
+  '',
+  `灰の地は明度の段で並ぶ: ${THEMES.filter((t) => t.step !== undefined).sort((a, b) => (a.step ?? 0) - (b.step ?? 0)).map((t) => `${STEP_LABEL[t.step ?? 0]} ${t.label} (\`${dictFor(t, null).bg}\`)`).join(' → ')}。真ん中の L 0.5 前後は白文字・黒文字とも 4.6:1 で頭打ちになるため、中灰は明るい側 (L 0.68・黒文字) に寄せている。`,
   '',
   `| 役割 | ${THEMES.map((t) => t.label).join(' | ')} |`,
   `|---|${THEMES.map(() => '---').join('|')}|`,

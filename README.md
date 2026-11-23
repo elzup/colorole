@@ -1,9 +1,9 @@
-# blueprint-theme
+# colorole
 
-Blueprint (青図 / 白図) 配色の**正本**と、そこから各ツールのテーマを作る生成器。
+役割 → 色の辞書。Blueprint (青図 / 白図) と灰の段 (黒〜白 5 段) のテーマ × core 色 (曜日・季節) の**正本**と、そこから各ツールのテーマを作る生成器。
 
-- demo: https://elzup.github.io/blueprint-theme/ (テーマ × core 色 × 適用先のシミュレーション)
-- データ: https://elzup.github.io/blueprint-theme/colors.json (全テーマ × 全 core 色の解決済みの値)
+- demo: https://elzup.github.io/colorole/ (テーマ × core 色 × 適用先のシミュレーション)
+- データ: https://elzup.github.io/colorole/colors.json (全テーマ × 全 core 色の解決済みの値)
 
 ## 正本は 2 つ
 
@@ -73,6 +73,8 @@ nr switch -- --day tue --palette contrast
 
 ### 曜日 (`groups/week.json`)
 
+種類: rotation (日によって入れ替わる。並べて見分けられる必要がある)
+
 七曜の字に寄せた core 色。テーマ名・出力ファイル名は互換のためグループ名を付けない (Blueprint Dark · Sun / blueprint-dark-sun)
 
 ![曜日](docs/swatches/group-week.svg)
@@ -87,25 +89,42 @@ nr switch -- --day tue --palette contrast
 | `fri` | 金 Fri | 山吹 | `#ffd23f` | `#8a6a00` | 12.58 / 4.49 |
 | `sat` | 土 Sat | 牡丹 | `#ee95d1` | `#7f366a` | 8.53 / 7.05 |
 
+### 季節 (`groups/season.json`)
+
+種類: rotation (日によって入れ替わる。並べて見分けられる必要がある)
+
+四季の字に寄せた core 色。日付から季節を選んで回す想定
+
+![季節](docs/swatches/group-season.svg)
+
+| id | 表示 | 由来 | dark | light | 地とのコントラスト (dark / light) |
+|---|---|---|---|---|---|
+| `season-spring` | 春 Spring | 桜 | `#f19fd6` | `#82396d` | 9.23 / 6.75 |
+| `season-summer` | 夏 Summer | 青葉 | `#7bd77f` | `#006c18` | 10.27 / 5.89 |
+| `season-autumn` | 秋 Autumn | 紅葉 | `#ffa47a` | `#913900` | 9.38 / 6.67 |
+| `season-winter` | 冬 Winter | 氷 | `#78c7fd` | `#005e8d` | 9.85 / 6.23 |
+
 ### テーマ (`src/tokens.ts`)
 
 ![themes](docs/swatches/themes.svg)
 
 core なしの値。全 24 役割と core ごとの値は `colors.json` にある。
 
-| 役割 | Blueprint | Whiteprint | Contrast Dark | Contrast Light | Dim Dark | Dim Light |
-|---|---|---|---|---|---|---|
-| `bg` | `#0a1626` | `#f4f1e8` | `#000000` | `#ffffff` | `#35383c` | `#d5d8db` |
-| `surface` | `#0f2036` | `#fbf9f3` | `#0d0d0d` | `#ffffff` | `#3f4347` | `#e2e5e8` |
-| `text` | `#dceaf7` | `#16304d` | `#ffffff` | `#000000` | `#eff2f5` | `#171b1f` |
-| `textMuted` | `#7b98b5` | `#5b7690` | `#c4c4c4` | `#333333` | `#c4cbd2` | `#43484e` |
-| `border` | `#1c2e42` | `#d0d4d3` | `#4d4d4d` | `#8c8c8c` | `#55585b` | `#afb1b3` |
-| `accent` | `#4dc4f5` | `#0b6f9e` | `#5cc8ff` | `#0050b3` | `#73d3f7` | `#0b4c92` |
-| `action` | `#26a7d7` | `#004c6f` | `#4ab8ee` | `#2269ce` | `#4eafd2` | `#4985d0` |
-| `success` | `#4ade80` | `#12784a` | `#3dff8f` | `#006b2e` | `#7fe998` | `#0b5d2a` |
-| `danger` | `#ff7a7a` | `#b3261e` | `#ff5050` | `#b00000` | `#f3a6a5` | `#9b1e22` |
-| `warning` | `#ffb84d` | `#9a5c00` | `#ffc400` | `#8a4b00` | `#f4c98d` | `#7d460b` |
-| `notice` | `#b79cff` | `#5b3fb8` | `#c99bff` | `#5a1fb0` | `#c9a3f5` | `#5a358c` |
+灰の地は明度の段で並ぶ: 黒 Contrast Dark (`#000000`) → 濃灰 Dim Dark (`#35383c`) → 中灰 Mid (`#96989b`) → 淡灰 Dim Light (`#d5d8db`) → 白 Contrast Light (`#ffffff`)。真ん中の L 0.5 前後は白文字・黒文字とも 4.6:1 で頭打ちになるため、中灰は明るい側 (L 0.68・黒文字) に寄せている。
+
+| 役割 | Blueprint | Whiteprint | Contrast Dark | Dim Dark | Mid | Dim Light | Contrast Light |
+|---|---|---|---|---|---|---|---|
+| `bg` | `#0a1626` | `#f4f1e8` | `#000000` | `#35383c` | `#96989b` | `#d5d8db` | `#ffffff` |
+| `surface` | `#0f2036` | `#fbf9f3` | `#0d0d0d` | `#3f4347` | `#a2a5a8` | `#e2e5e8` | `#ffffff` |
+| `text` | `#dceaf7` | `#16304d` | `#ffffff` | `#eff2f5` | `#0c0d0f` | `#171b1f` | `#000000` |
+| `textMuted` | `#7b98b5` | `#5b7690` | `#c4c4c4` | `#c4cbd2` | `#2e3133` | `#43484e` | `#333333` |
+| `border` | `#1c2e42` | `#d0d4d3` | `#4d4d4d` | `#55585b` | `#787a7c` | `#afb1b3` | `#8c8c8c` |
+| `accent` | `#4dc4f5` | `#0b6f9e` | `#5cc8ff` | `#73d3f7` | `#002655` | `#0b4c92` | `#0050b3` |
+| `action` | `#26a7d7` | `#004c6f` | `#4ab8ee` | `#4eafd2` | `#00092b` | `#4985d0` | `#2269ce` |
+| `success` | `#4ade80` | `#12784a` | `#3dff8f` | `#7fe998` | `#002c02` | `#0b5d2a` | `#006b2e` |
+| `danger` | `#ff7a7a` | `#b3261e` | `#ff5050` | `#f3a6a5` | `#500020` | `#9b1e22` | `#b00000` |
+| `warning` | `#ffb84d` | `#9a5c00` | `#ffc400` | `#f4c98d` | `#381f00` | `#7d460b` | `#8a4b00` |
+| `notice` | `#b79cff` | `#5b3fb8` | `#c99bff` | `#c9a3f5` | `#370067` | `#5a358c` | `#5a1fb0` |
 
 <!-- @@COLORS:END -->
 

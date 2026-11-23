@@ -97,16 +97,21 @@ export const toCssVars = (dict: Dictionary, prefix = ''): Record<string, string>
   Object.fromEntries(Object.entries(dict).map(([role, color]) => [`--${prefix}${kebab(role)}`, color]))
 
 // ---- テーマ: 明暗は選択軸ではなくテーマの属性 (D-0003)。dark / light の対は family で引く
-export type Theme = { id: string; label: string; family: string; appearance: Appearance; paletteId: string }
+// step = 地の明度の段 (黒 0 / 濃灰 1 / 中灰 2 / 淡灰 3 / 白 4)。色の付いた地 (Blueprint の紺・Whiteprint のクリーム) は段に入れない (D-0014)
+export type Theme = { id: string; label: string; family: string; appearance: Appearance; paletteId: string; step?: number }
 
 export const THEMES: readonly Theme[] = [
   { id: 'blueprint', label: 'Blueprint', family: 'blueprint', appearance: 'dark', paletteId: 'blueprint' },
   { id: 'whiteprint', label: 'Whiteprint', family: 'blueprint', appearance: 'light', paletteId: 'blueprint' },
-  { id: 'contrast-dark', label: 'Contrast Dark', family: 'contrast', appearance: 'dark', paletteId: 'contrast' },
-  { id: 'contrast-light', label: 'Contrast Light', family: 'contrast', appearance: 'light', paletteId: 'contrast' },
-  { id: 'dim-dark', label: 'Dim Dark', family: 'dim', appearance: 'dark', paletteId: 'dim' },
-  { id: 'dim-light', label: 'Dim Light', family: 'dim', appearance: 'light', paletteId: 'dim' },
+  // 灰の段は暗い順に並べる (demo のテーマ切り替え・README の見本がこの順になる)
+  { id: 'contrast-dark', label: 'Contrast Dark', family: 'contrast', appearance: 'dark', paletteId: 'contrast', step: 0 },
+  { id: 'dim-dark', label: 'Dim Dark', family: 'dim', appearance: 'dark', paletteId: 'dim', step: 1 },
+  { id: 'mid', label: 'Mid', family: 'mid', appearance: 'light', paletteId: 'mid', step: 2 },
+  { id: 'dim-light', label: 'Dim Light', family: 'dim', appearance: 'light', paletteId: 'dim', step: 3 },
+  { id: 'contrast-light', label: 'Contrast Light', family: 'contrast', appearance: 'light', paletteId: 'contrast', step: 4 },
 ]
+
+export const STEP_LABEL = ['黒', '濃灰', '中灰', '淡灰', '白'] as const
 
 // 曜日色は primary (action) から変える (D-0004)。意味色との衝突は strategies.ts の解き方で処理する
 // core = groups/*.json のメンバー (曜日など)。null は core なし (テーマの accent のまま)

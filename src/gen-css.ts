@@ -3,11 +3,11 @@
 //   node src/gen-css.ts --into <file>   → <file> の BEGIN/END マーカー間を置き換える (report-theme.css 用)
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { parseArgs } from 'node:util'
-import { type Appearance, DAYS, DAY_MIX, PALETTES } from './tokens.ts'
+import { type Appearance, type Palette, DAYS, DAY_MIX, PALETTES, appearancesOf } from './tokens.ts'
 import { THEMES, resolveTheme } from './dictionary.ts'
 import { TARGETS, applyTarget } from './targets.ts'
 
-export const BEGIN = '/* @@BLUEPRINT-TOKENS:BEGIN — 生成物。編集は elzup/blueprint-theme の src/tokens.ts で行い gen-css で再生成 */'
+export const BEGIN = '/* @@BLUEPRINT-TOKENS:BEGIN — 生成物。編集は elzup/colorole の src/tokens.ts で行い gen-css で再生成 */'
 export const END = '/* @@BLUEPRINT-TOKENS:END */'
 
 const REPORT = TARGETS.find((t) => t.id === 'report')
@@ -37,16 +37,22 @@ const lightBlocks = (selector: string, lines: string[], guard: boolean) => {
   ]
 }
 
+// 明暗の片方しか無いパレット (mid) は OS の明暗設定に関係なくその地にする
+const singleCss = (p: Palette, appearance: Appearance) =>
+  [block(p.selector, [comment(p.comment[appearance] ?? p.label, '  '), ...varLines(p.id, appearance, '  '), `  color-scheme: ${appearance};`], '')]
+
 const paletteCss = (guard: boolean) =>
   PALETTES.flatMap((p) => {
+    const sides = appearancesOf(p)
+    if (sides.length === 1) return singleCss(p, sides[0])
     const isRoot = p.selector === ':root'
     const darkLines = [
-      comment(p.comment.dark, '  '),
+      comment(p.comment.dark ?? '', '  '),
       ...varLines(p.id, 'dark', '  '),
       ...(isRoot ? ['', comment('曜日 accent の色見本 (data-day で accent に流す)', '  '), ...dayLines('dark', '  ')] : []),
     ]
     const lightLines = [
-      comment(p.comment.light, '    '),
+      comment(p.comment.light ?? '', '    '),
       ...varLines(p.id, 'light', '    '),
       ...(isRoot ? ['', ...dayLines('light', '    ')] : []),
     ]
