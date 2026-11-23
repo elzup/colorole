@@ -1,4 +1,4 @@
-// dist/vscode/ → dist/blueprint-theme-<ver>.vsix。--install で code --install-extension まで行う。
+// dist/vscode/ → dist/colorole-<ver>.vsix。--install で code --install-extension まで行う。
 // VSCode は ~/.vscode/extensions/extensions.json に載った拡張しか読まないので、symlink では入らない。
 // vsce を依存に入れないため、.vsix (zip + manifest 2 枚) を自前で組む
 import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
@@ -14,8 +14,8 @@ const manifest = `<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
     <Identity Language="en-US" Id="${EXT.name}" Version="${EXT.version}" Publisher="${EXT.publisher}" />
-    <DisplayName>Blueprint Theme</DisplayName>
-    <Description xml:space="preserve">Blueprint report palette for VSCode, with weekday accent variants.</Description>
+    <DisplayName>Colorole</DisplayName>
+    <Description xml:space="preserve">Blueprint / gray-ladder themes with weekday and season accent variants.</Description>
     <Categories>Themes</Categories>
     <Properties>
       <Property Id="Microsoft.VisualStudio.Code.Engine" Value="^1.80.0" />

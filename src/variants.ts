@@ -109,8 +109,9 @@ const fixedKeyword = (palette: Palette, appearance: Appearance, base: BaseColors
 }
 
 export const variantName = (palette: Palette, appearance: Appearance, day: Day | null) => {
-  const mode = appearance === 'dark' ? 'Dark' : 'Light'
-  return `${palette.label} ${mode}${day === null ? '' : ` · ${day.label}`}`
+  // 明暗の片方しか無いパレット (Mid) は Dark / Light を付けない
+  const mode = appearancesOf(palette).length === 1 ? '' : appearance === 'dark' ? ' Dark' : ' Light'
+  return `${palette.label}${mode}${day === null ? '' : ` · ${day.label}`}`
 }
 
 const slugOf = (palette: Palette, appearance: Appearance, day: Day | null) =>

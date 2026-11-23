@@ -103,7 +103,7 @@ const blueprint: Palette = {
 
 const contrast: Palette = {
   id: 'contrast',
-  label: 'Blueprint Contrast',
+  label: 'Contrast',
   selector: ':root[data-palette="contrast"]',
   comment: {
     dark:
@@ -164,7 +164,7 @@ const contrast: Palette = {
 // 間の中灰は mid パレット (黒 / 濃灰 / 中灰 / 淡灰 / 白 の 5 段は Theme.step で並べる、D-0014)
 const dim: Palette = {
   id: 'dim',
-  label: 'Blueprint Dim',
+  label: 'Dim',
   selector: ':root[data-palette="dim"]',
   comment: {
     dark: 'Dim パレット (dark): 中灰の地に白文字。純黒より眩しさが少ない',
@@ -224,7 +224,7 @@ const dim: Palette = {
 // 他のテーマより近い (最小 0.091、緑-橙)。色だけで区別させず文字・形と併用する前提 (AQ-0005)
 const mid: Palette = {
   id: 'mid',
-  label: 'Blueprint Mid',
+  label: 'Mid',
   selector: ':root[data-palette="mid"]',
   comment: { light: 'Mid パレット: 中灰の地に黒文字。白にも黒にも寄らない地' },
   colors: {

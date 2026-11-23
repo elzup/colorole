@@ -64,7 +64,7 @@ nr switch -- --dry-run          # 今日の曜日に切り替えた場合の変�
 nr switch -- --day tue --palette contrast
 ```
 
-テーマ名は `Blueprint Dark · Tue` / `Blueprint Contrast Light · Sat` の形式。core なし (`Blueprint Dark`) は元の accent を使う。
+テーマ名は `Blueprint Dark · Tue` / `Contrast Light · Sat` / `Mid · Spring` の形式。core なし (`Blueprint Dark`) は元の accent を使う。
 
 <!-- @@COLORS:BEGIN (node src/gen-readme.ts が生成。手で編集しない) -->
 ## 色の一覧

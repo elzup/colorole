@@ -3,8 +3,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { type Variant, allVariants } from './variants.ts'
 import { alpha, mix } from './color.ts'
 
-// 拡張の id (elzup.blueprint-theme) は Brewfile がこの名前で入れているので、リポ名 (colorole) に合わせて変えない
-export const EXT = { publisher: 'elzup', name: 'blueprint-theme', version: '0.1.0' }
+export const EXT = { publisher: 'elzup', name: 'colorole', version: '0.1.0' }
 const OUT = 'dist/vscode'
 
 // ボタンは accent 地に bg 文字。hover は地を text 側へ寄せるだけで文字色は変えない (どちらでも読める)
@@ -187,8 +186,8 @@ const themeJson = (v: Variant) => ({
 
 const packageJson = (variants: Variant[]) => ({
   name: EXT.name,
-  displayName: 'Blueprint Theme',
-  description: 'Blueprint (青図 / 白図) のレポート配色をエディタに。曜日ごとに accent が変わるバリアント付き',
+  displayName: 'Colorole',
+  description: 'Blueprint (青図 / 白図) と灰の段 (Contrast / Dim / Mid) の配色をエディタに。曜日・季節ごとに accent が変わるバリアント付き',
   version: EXT.version,
   publisher: EXT.publisher,
   license: 'MIT',
