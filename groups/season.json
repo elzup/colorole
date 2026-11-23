@@ -1,0 +1,13 @@
+{
+  "$schema": "./schema.json",
+  "id": "season",
+  "label": "季節",
+  "kind": "rotation",
+  "note": "四季の字に寄せた core 色。日付から季節を選んで回す想定",
+  "members": [
+    { "key": "spring", "label": "Spring", "ja": "春", "motif": "桜", "color": { "dark": "#f19fd6", "light": "#82396d" } },
+    { "key": "summer", "label": "Summer", "ja": "夏", "motif": "青葉", "color": { "dark": "#7bd77f", "light": "#006c18" } },
+    { "key": "autumn", "label": "Autumn", "ja": "秋", "motif": "紅葉", "color": { "dark": "#ffa47a", "light": "#913900" } },
+    { "key": "winter", "label": "Winter", "ja": "冬", "motif": "氷", "color": { "dark": "#78c7fd", "light": "#005e8d" } }
+  ]
+}

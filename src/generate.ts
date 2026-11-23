@@ -27,11 +27,31 @@ const lerpHue = (a: number, b: number, t: number) => {
   return (a + diff * t + 360) % 360
 }
 
-const tintColor = (css: string, core: { c: number; h: number }, tint: number) => {
+// core の彩度がこれ未満なら「色の薄い core」とみなし、彩度に比例して色相の寄せを弱め、下地の彩度を落とす。
+// 灰の core は色相が実質ないので、色相だけ寄せると Blueprint の青い地が意味のない茶や緑に回ってしまう。
+// 曜日・季節の core は彩度 0.1 以上なので、ここより上で従来どおり (結果は変わらない)
+const ACHROMATIC_CHROMA = 0.06
+
+type Polar = { c: number; h: number }
+
+// 色のある core: 色相を core へ回し、彩度を少し足す (地の彩度はテーマのまま)
+const rotateToward = (c: number, h: number, core: Polar, tint: number): Polar =>
+  ({ h: lerpHue(h, core.h, tint), c: c + core.c * CHROMA_GAIN * tint })
+
+// 色の薄い core: 色相を回さず a/b 平面で直線に混ぜる。地の青 (255°) と茶鼠 (70°) のように反対側の色相を
+// 途中まで回すと無関係な赤紫を通るため。行き先は「core の色みだけを残した地」(core が無彩色なら灰)
+const blendToward = (c: number, h: number, core: Polar, tint: number): Polar => {
+  const rad = (deg: number) => (deg * Math.PI) / 180
+  const target = c * (core.c / ACHROMATIC_CHROMA) + core.c * CHROMA_GAIN
+  const a = lerp(c * Math.cos(rad(h)), target * Math.cos(rad(core.h)), tint)
+  const b = lerp(c * Math.sin(rad(h)), target * Math.sin(rad(core.h)), tint)
+  return { c: Math.hypot(a, b), h: ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360 }
+}
+
+const tintColor = (css: string, core: Polar, tint: number) => {
   const { l, c, h } = toOklch(css)
   const a = parse(css).a
-  const nextH = lerpHue(h, core.h, tint)
-  const nextC = c + core.c * CHROMA_GAIN * tint
+  const { h: nextH, c: nextC } = core.c >= ACHROMATIC_CHROMA ? rotateToward(c, h, core, tint) : blendToward(c, h, core, tint)
   const solid = CHROMA_FALLBACK.map((k) => fromOklch(l, nextC * k, nextH)).find((x) => x !== null)
   if (solid === undefined || solid === null) return css
   return a < 1 ? alpha(solid, a) : solid

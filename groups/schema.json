@@ -10,6 +10,11 @@
     "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*$", "description": "出力名に入る。week だけは互換のため出力名に付けない" },
     "label": { "type": "string" },
     "note": { "type": "string" },
+    "kind": {
+      "enum": ["rotation", "choice"],
+      "default": "rotation",
+      "description": "rotation = 日によって入れ替わる (曜日・季節)。並べて見分けられる必要がある / choice = 好みで 1 つ選ぶ。メンバー同士は近くてよい"
+    },
     "members": {
       "type": "array",
       "minItems": 1,

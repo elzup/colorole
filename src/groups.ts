@@ -11,7 +11,10 @@ export type CoreMember = {
   motif: string
   color: Record<Appearance, string>
 }
-export type CoreGroup = { id: string; label: string; note: string; members: readonly CoreMember[] }
+// rotation = 日によって入れ替わる (曜日・季節) ので並べて見分けられる必要がある。choice = 好みで 1 つ選ぶのでメンバー同士は近くてよい
+export type GroupKind = 'rotation' | 'choice'
+const KINDS: readonly GroupKind[] = ['rotation', 'choice']
+export type CoreGroup = { id: string; label: string; note: string; kind: GroupKind; members: readonly CoreMember[] }
 
 // 曜日は最初に作ったグループで、VSCode / Zed の設定やテーマ名がこの id を前提にしている
 export const LEGACY_GROUP = 'week'
@@ -62,7 +65,8 @@ const parseGroup = (file: string, raw: unknown): CoreGroup => {
   const members = raw.members.map((m, i) => parseMember(file, id, m, i))
   const dup = members.find((m, i) => members.findIndex((x) => x.key === m.key) !== i)
   if (dup !== undefined) fail(file, 'members', `key が重複しています: ${dup.key}`)
-  return { id, label: text(file, 'label', raw.label, true), note: text(file, 'note', raw.note, false), members }
+  const kind = raw.kind === undefined ? 'rotation' : KINDS.find((k) => k === raw.kind) ?? fail(file, 'kind', `${KINDS.join(' / ')} のどれか: ${String(raw.kind)}`)
+  return { id, label: text(file, 'label', raw.label, true), note: text(file, 'note', raw.note, false), kind, members }
 }
 
 const loadGroups = (): CoreGroup[] => {

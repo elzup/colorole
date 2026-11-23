@@ -42,8 +42,10 @@ type Check = { kind: Kind; vision: Vision; label: string; value: number; min: nu
 // 不合格にするのは「本文コントラスト不足」と「一般色覚で他メンバーと衝突」だけ。
 // 意味色との近さは衝突の解き方 (明度で分ける) が primary 側で解消し、色覚シミュレーションの近さは
 // 色相だけで分けきれない以上 文字・位置を併用する前提で警告に留める (AQ-0005)
+// choice のグループ (好みで選ぶ候補の集まり) は 1 つ選んで使うので、メンバー同士の近さは不合格にしない
+const isRotation = (group?.kind ?? 'rotation') === 'rotation'
 const isBlocking = (c: Check) =>
-  (c.kind === 'contrast' && c.value < c.min) || (c.kind === 'member' && c.vision === 'normal' && c.value < DISTINCT.clash)
+  (c.kind === 'contrast' && c.value < c.min) || (isRotation && c.kind === 'member' && c.vision === 'normal' && c.value < DISTINCT.clash)
 const mark = (c: Check) => (c.value >= c.min ? 'ok  ' : isBlocking(c) ? 'FAIL' : 'warn')
 
 const nearestOf = (ap: Appearance, vision: Vision, pool: { name: string; color: string }[]) => {

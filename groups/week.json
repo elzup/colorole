@@ -2,6 +2,7 @@
   "$schema": "./schema.json",
   "id": "week",
   "label": "曜日",
+  "kind": "rotation",
   "note": "七曜の字に寄せた core 色。テーマ名・出力ファイル名は互換のためグループ名を付けない (Blueprint Dark · Sun / blueprint-dark-sun)",
   "members": [
     { "key": "sun", "label": "Sun", "ja": "日", "motif": "橙 (太陽)", "color": { "dark": "#ff9a3c", "light": "#b04e00" } },
