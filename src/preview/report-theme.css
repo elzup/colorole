@@ -14,7 +14,7 @@
   --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
 }
 
-/* @@BLUEPRINT-TOKENS:BEGIN — 生成物。編集は elzup/blueprint-theme の src/tokens.ts で行い gen-css で再生成 */
+/* @@BLUEPRINT-TOKENS:BEGIN — 生成物。編集は elzup/colorole の src/tokens.ts で行い gen-css で再生成 */
 
 :root {
   /* 青図 (blueprint): 濃紺 × シアン */

@@ -1,5 +1,5 @@
 {
-  "name": "blueprint-theme",
+  "name": "colorole",
   "private": true,
   "type": "module",
   "description": "Blueprint 配色トークンの正本と、CSS / VSCode / Zed テーマの生成器",

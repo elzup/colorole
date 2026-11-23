@@ -79,7 +79,7 @@ const simTerminal = () => {
   const c = (k) => ({ color: `var(--terminal-${k})` })
   const line = (parts) => h('div', {}, parts.map(([text, k]) => h('span', { text, style: k ? c(k) : {} })))
   return h('div', { class: 'sim sim-terminal' }, [
-    line([['~/blueprint-theme ', 'blue'], ['main ', 'magenta'], ['$ ', 'cyan'], ['git status']]),
+    line([['~/colorole ', 'blue'], ['main ', 'magenta'], ['$ ', 'cyan'], ['git status']]),
     line([['  modified:   ', 'red'], ['src/dictionary.ts', 'red']]),
     line([['  new file:   ', 'green'], ['src/targets.ts', 'green']]),
     line([['warning: ', 'yellow'], ['LF will be replaced by CRLF']]),

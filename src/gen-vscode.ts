@@ -3,6 +3,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { type Variant, allVariants } from './variants.ts'
 import { alpha, mix } from './color.ts'
 
+// 拡張の id (elzup.blueprint-theme) は Brewfile がこの名前で入れているので、リポ名 (colorole) に合わせて変えない
 export const EXT = { publisher: 'elzup', name: 'blueprint-theme', version: '0.1.0' }
 const OUT = 'dist/vscode'
 

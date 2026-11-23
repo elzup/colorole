@@ -105,7 +105,7 @@ const body = (generatedAt: string) => `<header class="dm-head">
       <tbody id="dm-pairs"></tbody></table></div>
   </section>
   <footer class="dm-foot">
-    generated: node src/gen-demo.ts (elzup/blueprint-theme) · ${generatedAt}<br>
+    generated: node src/gen-demo.ts (elzup/colorole) · ${generatedAt}<br>
     source: src/generate.ts (core → variant) / src/strategies.ts (衝突の解き方) / src/dictionary.ts (辞書・ペア) / src/targets.ts (key 変換表)<br>
     <a href="./preview.html">配色レビュー (旧プレビュー)</a>
   </footer>

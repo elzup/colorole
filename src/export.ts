@@ -20,7 +20,7 @@ const coreId = (core: CoreMember | null) => (core === null ? CORE_NONE : memberS
 
 // colors.json の形: variants[テーマ id][core id] = { 役割: #hex }。targets[適用先 id][テーマ id][core id] = { key: 値 }
 export const buildColorsJson = (generatedAt: string) => ({
-  $comment: 'elzup/blueprint-theme の生成物。手で編集しない。正本は groups/*.json (core 色) と src/tokens.ts (テーマ)',
+  $comment: 'elzup/colorole の生成物。手で編集しない。正本は groups/*.json (core 色) と src/tokens.ts (テーマ)',
   generatedAt,
   defaults: EXPORT_DEFAULTS,
   groups: GROUPS.map((g) => ({ ...g, members: g.members.map((m) => ({ id: memberSlug(m), ...m })) })),
